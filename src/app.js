@@ -22,6 +22,10 @@ const transactionRouter=require('./routes/transaction.routes');
 /**
  * -USE ROUTES using routes
  */
+app.get("/",(req,res)=>{
+    res.send("Welcome to the Banking API");
+}); // This line defines a route for handling GET requests to the root path ("/"). When a request is made to this endpoint, it sends a simple welcome message as the response. This can serve as a basic health check or landing page for the API.
+
 app.use("/api/auth", authRouter); // Mount the auth router at the /api/auth path
 app.use("/api/account", accountRouter); // Mount the account router at the /api/account path
 app.use("/api/transactions", transactionRouter); // Mount the transaction router at the /api/transactions path
