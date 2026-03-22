@@ -1,6 +1,7 @@
 // This file is the entry point of the src. It instantiates the Express server and exports it for use in other parts of the application.
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
 /**
  * Routes — must be required AFTER express is instantiated
@@ -19,16 +20,19 @@ const app = express();
  * POST/PUT requests to that route — even if the middleware is added later in the file.
  * Express processes middleware in the exact order app.use() is called.
  */
+app.use(cors({
+    origin: ['http://localhost:3000', 'http://localhost:5500', 'http://127.0.0.1:5500'],
+    credentials: true  // Allow cookies to be sent cross-origin
+}));
 app.use(express.json());      // Parse JSON request bodies into req.body
 app.use(cookieParser());      // Parse cookies into req.cookies
 
-// ── Routes ────────────────────────────────────────────────────────────────────
-app.get("/", (req, res) => {
-    res.send("Welcome to the KTG-LEDGER Banking API");
-});
-
+// ── API Routes ────────────────────────────────────────────────────────────────
 app.use("/api/auth", authRouter);
 app.use("/api/account", accountRouter);
 app.use("/api/transactions", transactionRouter);
+
+module.exports = app;
+
 
 module.exports = app;

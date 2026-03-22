@@ -1,0 +1,111 @@
+/**
+ * @file globals.css
+ * @description Global stylesheet using Tailwind CSS v4's @import syntax.
+ *              Defines CSS custom properties (design tokens) for the entire app:
+ *              colours, fonts, spacing, radii, shadows, and custom animations.
+ *
+ *              Tailwind v4 reads this file as the single source of truth —
+ *              no tailwind.config.js needed.
+ */
+
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESIGN TOKENS — Custom Properties
+   ═══════════════════════════════════════════════════════════════════════════ */
+@theme {
+  /* ── Colours ───────────────────────────────────────────────────────────── */
+  --color-bg:           #07070d;
+  --color-surface:      #10101a;
+  --color-surface-alt:  #181828;
+  --color-border:       rgba(255, 255, 255, 0.06);
+  --color-border-hover: rgba(255, 255, 255, 0.14);
+
+  --color-text:         #f0f0f8;
+  --color-text-muted:   #8888a4;
+  --color-text-dim:     #55556a;
+
+  --color-primary:      #7c6aff;
+  --color-primary-soft: rgba(124, 106, 255, 0.14);
+  --color-primary-glow: rgba(124, 106, 255, 0.30);
+
+  --color-accent:       #a78bfa;
+  --color-success:      #34d399;
+  --color-success-soft: rgba(52, 211, 153, 0.12);
+  --color-error:        #f87171;
+  --color-error-soft:   rgba(248, 113, 113, 0.12);
+
+  /* ── Fonts ─────────────────────────────────────────────────────────────── */
+  --font-sans:    "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Playfair Display", ui-serif, Georgia, serif;
+
+  /* ── Animations ────────────────────────────────────────────────────────── */
+  --animate-fade-in:     fade-in 0.8s ease-out both;
+  --animate-fade-in-up:  fade-in-up 0.8s ease-out both;
+  --animate-slide-in:    slide-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-pulse-glow:  pulse-glow 3s ease-in-out infinite;
+  --animate-float:       float 6s ease-in-out infinite;
+  --animate-scroll-hint: scroll-hint 2s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   KEYFRAMES
+   ═══════════════════════════════════════════════════════════════════════════ */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(124, 106, 255, 0.15); }
+  50%      { box-shadow: 0 0 40px rgba(124, 106, 255, 0.35); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-12px); }
+}
+
+@keyframes scroll-hint {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50%      { transform: translateY(10px); opacity: 0.4; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BASE RESETS & GLOBAL STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-alt);
+  border-radius: 9999px;
+}
+
+/* Selection */
+::selection {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
