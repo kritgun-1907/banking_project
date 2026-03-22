@@ -3,7 +3,11 @@ const jwt = require("jsonwebtoken");
 const { tokenBlacklistModel } = require("../models/blacklist.model");
 
 async function authMiddleware(req, res, next) {
-    const token = req.cookies.token || req.headers.authorization?.split(" ")[1]; // Extract the token from cookies or Authorization header and .split the header to get the token part if it exists.
+    /**
+     * ⚠️ FIX: Cookie is set as 'jwt_token' in auth.controller.js — must read the same name here.
+     * Using 'token' would always return undefined, making cookie-based auth permanently broken.
+     */
+    const token = req.cookies.jwt_token || req.headers.authorization?.split(" ")[1];
 
     if (!token) {
         return res.status(401).json({ message: "Authentication token is missing" }); // If no token is found, return a 401 Unauthorized response with a message indicating that the authentication token is missing.
@@ -33,8 +37,8 @@ async function authMiddleware(req, res, next) {
 }
 
 async function adminMiddleware(req, res, next) {
-
-    const token = req.cookies.token || req.headers.authorization?.split(" ")[1]; // Extract the token from cookies or Authorization header and .split the header to get the token part if it exists.
+    // ⚠️ FIX: Same cookie name fix as authMiddleware above.
+    const token = req.cookies.jwt_token || req.headers.authorization?.split(" ")[1];
 
     if (!token) {
         return res.status(401).json({ message: "Authentication token is missing" }); // If no token is found, return a 401 Unauthorized response with a message indicating that the authentication token is missing.

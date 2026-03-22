@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+// ⚠️ FIX: package.json installs 'bcryptjs' (the pure-JS version), not 'bcrypt' (native C++ addon).
+// Using require('bcrypt') causes a MODULE_NOT_FOUND crash at startup.
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
     email:{
@@ -33,21 +35,19 @@ const userSchema = new mongoose.Schema({
         immutable:true, // This option is used to make the systemUser field immutable, meaning that once it is set for a user document, it cannot be changed. This ensures that the role of a user (system user or regular user) remains consistent throughout their lifecycle in the application and prevents unauthorized changes to user roles.
         select:false // This option is used to exclude the systemUser field from query results by default, enhancing security by preventing the role of a user from being exposed when retrieving user data from the database. To include the systemUser field in a query result, you would need to explicitly select it using .select('+systemUser') in your query.
     },
-    timestamps:true // This option is used to automatically add createdAt and updatedAt fields to the schema, which will store the timestamps for when a document is created and last updated, respectively. This can be useful for tracking when user accounts are created and modified.
+}, {
+    timestamps: true // Schema option: automatically adds createdAt and updatedAt fields to every document. Must be passed as the second argument to mongoose.Schema(), NOT as a field inside the schema definition.
 });
 
-userSchema.pre('save', async function(next){ // This line defines a pre-save middleware function for the userSchema. The 'save' hook is triggered before a document is saved to the database. The function is asynchronous, allowing for the use of await within it, and it takes next as an argument, which is a callback function that should be called to proceed to the next middleware or to save the document after the current middleware has completed its operations.
-    if(!this.isModified('password')){ // This condition checks if the password field has been modified. If it hasn't been modified, it calls next() to skip the password hashing process and proceed to save the document. This is important because we only want to hash the password when it is first created or when it is updated, not every time the document is saved.
-        return next();
+userSchema.pre('save', async function(){
+    // In Mongoose 7+/9+, async pre-hooks do NOT receive a `next` callback.
+    // Simply return early or throw — Mongoose handles the rest.
+    if(!this.isModified('password')){
+        return;
     }
-    try{
-        const salt = await bcrypt.genSalt(10); // This line generates a salt using bcrypt's genSalt method with a cost factor of 10. The salt is a random string that is used to enhance the security of the hashed password by adding randomness to it, making it more resistant to attacks such as rainbow table attacks.
-        this.password = await bcrypt.hash(this.password, salt); // This line hashes the user's password using bcrypt's hash method, which takes the plain text password and the generated salt as arguments. The resulting hashed password is then stored in the password field of the user document. This ensures that the user's password is securely stored in the database, as it is not stored in plain text and is instead transformed into a hash that is difficult to reverse-engineer.
-        next(); // This line calls next() to proceed to the next middleware function or to save the document after the password has been hashed.
-    }catch(err){
-        next(err); // If an error occurs during the password hashing process, this line will pass the error to the next middleware function for handling.
-    }
-}); 
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+});
 
 userSchema.methods.comparePassword = async function(password){ // This line defines an instance method called comparePassword on the userSchema. This method takes a candidatePassword as an argument, which is the plain text password that needs to be compared with the hashed password stored in the database. The method is asynchronous, allowing for the use of await within it.
     try{

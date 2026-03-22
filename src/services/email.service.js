@@ -13,6 +13,12 @@ const transporter = nodemailer.createTransport({ // This line creates a transpor
   },
 });
 
+// Attach an error listener so unhandled 'error' events on the transport
+// stream don't crash the process (Node.js kills on unhandled EventEmitter errors).
+transporter.on('error', (err) => {
+  console.error('[Email transporter error]', err.message);
+});
+
 // Verify the connection configuration
 transporter.verify((error, success) => {
   if (error) {
@@ -22,7 +28,8 @@ transporter.verify((error, success) => {
   }
 });
 
-module.exports = transporter;
+// NOTE: This early `module.exports = transporter` is overwritten by the final
+// module.exports at the bottom of this file. Kept for reference but has no effect.
 
 
 // Function to send email

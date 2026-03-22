@@ -1,6 +1,7 @@
 const transactionModel = require("../models/transaction.model");
 const accountModel = require("../models/account.model");
 const ledgerModel = require("../models/ledger.model");
+const userModel = require("../models/user.model");
 const emailService = require("../services/email.service");
 const mongoose = require('mongoose');
 
@@ -370,15 +371,11 @@ async function createTransactionController(req, res) {
 
         // ── Send email notifications AFTER successful commit ──────────────────
         /**
-         * Emails are intentionally sent AFTER _executeTransfer() returns, meaning
-         * AFTER the session is committed. We never notify users about a transaction
-         * that hasn't been finalized yet.
-         *
-         * Promise.allSettled() ensures a failed email (e.g. SMTP timeout) never
-         * causes the HTTP response to become a 500 — the transaction is already
-         * committed and that outcome must not be affected by email delivery.
+         * Fire-and-forget: do NOT await — email must never block the HTTP response.
+         * The transaction is already committed; a slow/broken SMTP server must not
+         * prevent the client from receiving their 201.
          */
-        await Promise.allSettled([
+        Promise.allSettled([
             emailService.sendTransactionAlertEmail(
                 fromUserAccount.user?.email ?? req.user.email,
                 req.user.name,
@@ -395,7 +392,7 @@ async function createTransactionController(req, res) {
                 balance + amount,
                 `Transfer from account ${fromAccount}`
             )
-        ]);
+        ]).catch(() => {});
 
         return res.status(201).json({
             message: "Transaction completed successfully",
@@ -501,17 +498,21 @@ async function createIntialFundsTransaction(req, res) {
     // STEP 4: Locate the system account
     // ─────────────────────────────────────────────────────────────────────────
     /**
-     * The system account is a special internal account identified by { systemUser: true }.
-     * It acts as the bank's own reserve account — the source of all initially issued funds.
-     * If this account is missing or inactive, the operation must fail immediately because
-     * we have no valid "from" party to record the DEBIT against. Without a DEBIT entry
-     * on the system side, the double-entry bookkeeping would be broken (only a CREDIT
-     * would exist, meaning funds appeared from nowhere with no corresponding offset).
+     * The `systemUser` flag lives on the USER model (user.model.js), not on
+     * the account model. So we first find the system user, then look up their
+     * ACTIVE account. This account acts as the bank's internal reserve — the
+     * source of all initially issued funds.
      *
-     * ⚠️ GOTCHA: The `systemUser` field must exist on the accountSchema. Make sure it is
-     *    defined in account.model.js. If not, this query will always return null.
+     * If either the system user or their account is missing, the operation
+     * must fail because we'd have no valid "from" party for the DEBIT entry.
      */
-    const systemAccount = await accountModel.findOne({ systemUser: true, status: "ACTIVE" });
+    const systemUser = await userModel.findOne({ systemUser: true }).select('+systemUser');
+
+    if (!systemUser) {
+        return res.status(500).json({ message: "System user not found. Cannot issue funds." });
+    }
+
+    const systemAccount = await accountModel.findOne({ user: systemUser._id, status: "ACTIVE" });
 
     if (!systemAccount) {
         return res.status(500).json({ message: "System account not found or not active. Cannot issue funds." });
@@ -547,17 +548,17 @@ async function createIntialFundsTransaction(req, res) {
             idempotencyKey
         });
 
-        // Send email to the receiving user AFTER the commit is confirmed.
-        await Promise.allSettled([
+        // Fire-and-forget email — do NOT await.
+        Promise.allSettled([
             emailService.sendTransactionAlertEmail(
                 req.user.email,
                 req.user.name,
                 'credited',
                 amount,
-                amount, // First deposit — their new balance equals the credited amount
+                amount,
                 'Initial funds issued by system'
             )
-        ]);
+        ]).catch(() => {});
 
         return res.status(201).json({
             message: "Initial funds transaction completed successfully",

@@ -1,7 +1,5 @@
-const { access } = require('fs');
+
 const mongoose=require('mongoose'); 
-const accountModel = require('./account.model');
-const { error } = require('console');
 
 const ledgerSchema = new mongoose.Schema({
     account:{

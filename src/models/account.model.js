@@ -1,5 +1,7 @@
-const { time, timeStamp } = require('console');
 const mongoose = require('mongoose');
+// NOTE: Do NOT import ledger.model.js here — it would create a circular dependency
+// (ledger.model.js already imports account.model.js). Instead, we use
+// mongoose.model('ledger') inside getCurrentBalance() for lazy resolution.
 
 const accountSchema = new mongoose.Schema({
     user:{
@@ -65,8 +67,10 @@ accountSchema.index({user:1,status:1}); // This line creates a compound index on
 //    Placing `project: {...}` as a key inside the $group stage object does nothing —
 //    it's silently ignored by MongoDB. It must be its own `{ $project: {...} }` stage.
 accountSchema.methods.getCurrentBalance = async function() {
+    // Lazy-load to avoid circular dependency (ledger.model.js imports account.model.js)
+    const Ledger = mongoose.model('ledger');
 
-    const balanceData = await ledgerModel.aggregate([
+    const balanceData = await Ledger.aggregate([
         {
             // Stage 1: Filter ledger entries for only this account
             $match: { account: this._id }
