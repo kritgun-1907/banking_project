@@ -32,7 +32,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/account", accountRouter);
 app.use("/api/transactions", transactionRouter);
 
-module.exports = app;
+
 
 
 module.exports = app;
