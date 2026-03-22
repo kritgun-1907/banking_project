@@ -1,21 +1,23 @@
 /**
  * @file Logo.tsx
- * @description Shared logo component used in the navbar and auth pages.
- *              Renders "KTG" in white and "-LEDGER" in primary accent colour.
+ * @description Shared logo component — "KTG" in bold black, "-LEDGER" in warm gold accent.
+ *              Apple-inspired minimal branding.
  */
 import React from "react";
 
 interface LogoProps {
   /** Optional extra Tailwind classes */
   className?: string;
+  /** Show larger variant for hero sections */
+  large?: boolean;
 }
 
-export default function Logo({ className = "" }: LogoProps) {
+export default function Logo({ className = "", large = false }: LogoProps) {
   return (
     <span
-      className={`font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight select-none ${className}`}
+      className={`font-display ${large ? "text-4xl" : "text-2xl"} font-bold tracking-tight select-none ${className}`}
     >
-      KTG<span className="text-[var(--color-primary)]">-LEDGER</span>
+      KTG<span className="text-accent">-LEDGER</span>
     </span>
   );
 }

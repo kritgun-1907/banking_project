@@ -31,9 +31,19 @@ const userSchema = new mongoose.Schema({
     },
     systemUser:{
         type:Boolean,
-        default:false, // This field is used to indicate whether a user is a system user (e.g., an admin or a service account) or a regular user. By default, it is set to false, meaning that new users will be considered regular users unless explicitly marked as system users.
-        immutable:true, // This option is used to make the systemUser field immutable, meaning that once it is set for a user document, it cannot be changed. This ensures that the role of a user (system user or regular user) remains consistent throughout their lifecycle in the application and prevents unauthorized changes to user roles.
-        select:false // This option is used to exclude the systemUser field from query results by default, enhancing security by preventing the role of a user from being exposed when retrieving user data from the database. To include the systemUser field in a query result, you would need to explicitly select it using .select('+systemUser') in your query.
+        default:false,
+        immutable:true,
+        select:false
+    },
+    // ── Account Lockout Fields ────────────────────────────────────────────────
+    failedLoginAttempts: {
+        type: Number,
+        default: 0,
+        select: false // excluded from normal queries; must use .select('+failedLoginAttempts')
+    },
+    lockUntil: {
+        type: Date,
+        select: false // excluded from normal queries; must use .select('+lockUntil')
     },
 }, {
     timestamps: true // Schema option: automatically adds createdAt and updatedAt fields to every document. Must be passed as the second argument to mongoose.Schema(), NOT as a field inside the schema definition.

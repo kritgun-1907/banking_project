@@ -88,7 +88,7 @@ export default function DashboardView() {
   return (
     <div className="min-h-screen bg-bg">
       {/* ── Top Navigation ───────────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-40 flex items-center justify-between border-b border-border bg-bg/80 backdrop-blur-md px-6 py-4 md:px-12">
+      <nav className="sticky top-0 z-40 flex items-center justify-between border-b border-border bg-white/80 backdrop-blur-md px-6 py-4 md:px-12">
         <Logo />
         <div className="flex items-center gap-4">
           <span className="hidden sm:inline text-sm text-text-muted">
@@ -103,7 +103,7 @@ export default function DashboardView() {
       <main className="mx-auto max-w-5xl px-6 py-10 md:px-12">
         {/* ── Greeting ─────────────────────────────────────────────────── */}
         <div className="mb-10 animate-fade-in-up">
-          <h1 className="text-3xl md:text-4xl font-bold mb-1">
+          <h1 className="text-3xl md:text-4xl font-bold mb-1 text-(--color-text)">
             {getGreeting(user.name)}
           </h1>
           <p className="text-text-muted">
@@ -114,24 +114,23 @@ export default function DashboardView() {
         {/* ── Accounts Section ─────────────────────────────────────────── */}
         <section className="mb-12 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold">Your Accounts</h2>
+            <h2 className="text-xl font-semibold text-(--color-text)">Your Accounts</h2>
             <Button sm onClick={handleCreateAccount} disabled={creating}>
               <Plus size={14} /> {creating ? "Creating…" : "New Account"}
             </Button>
           </div>
 
           {loading ? (
-            /* Skeleton loaders */
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[1, 2].map((i) => (
                 <div
                   key={i}
-                  className="h-44 animate-pulse rounded-2xl bg-surface border border-border"
+                  className="h-44 animate-pulse rounded-2xl bg-white border border-border"
                 />
               ))}
             </div>
           ) : accounts.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-border p-12 text-center">
+            <div className="rounded-2xl border border-dashed border-border p-12 text-center bg-white">
               <p className="text-text-muted mb-4">
                 No accounts yet. Create one to get started!
               </p>
@@ -151,8 +150,8 @@ export default function DashboardView() {
         {/* ── Transfer Section ─────────────────────────────────────────── */}
         {accounts.length > 0 && (
           <section className="animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
-            <h2 className="text-xl font-semibold mb-6">Send Money</h2>
-            <div className="rounded-2xl border border-border bg-surface p-6 md:p-8">
+            <h2 className="text-xl font-semibold mb-6 text-(--color-text)">Send Money</h2>
+            <div className="rounded-2xl border border-border bg-white p-6 md:p-8 shadow-[0_2px_20px_rgba(0,0,0,0.04)]">
               <TransferForm
                 accounts={accounts}
                 onSuccess={handleTransferSuccess}

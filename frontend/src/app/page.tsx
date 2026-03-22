@@ -1,15 +1,7 @@
 /**
  * @file page.tsx
- * @description Root page component — the single "page" of this SPA.
- *
- * Renders three mutually exclusive views based on app state:
- *  1. **Landing** — shown when no user is logged in and no auth form is active.
- *  2. **Auth**    — shown when user clicks Login/Register from the landing page.
- *  3. **Dashboard** — shown when `user` is set in AuthContext (after login/register).
- *
- * View transitions are managed by a simple `view` state string.
- * When `user` becomes non-null (login/register success), we always show Dashboard.
- * When `user` becomes null (logout), we always show Landing.
+ * @description Root page — SPA with Landing, Auth, and Dashboard views.
+ *              Landing page includes HeroSection, FeaturesSection, and a rich Footer.
  */
 "use client";
 
@@ -17,34 +9,45 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import HeroSection from "@/components/landing/HeroSection";
 import FeaturesSection from "@/components/landing/FeaturesSection";
+import Footer from "@/components/landing/Footer";
 import AuthForms from "@/components/auth/AuthForms";
 import DashboardView from "@/components/dashboard/DashboardView";
+import AdminDashboard from "@/components/dashboard/AdminDashboard";
 
 type View = "landing" | "register" | "login" | "dashboard";
 
 export default function HomePage() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const [view, setView] = useState<View>("landing");
 
-  /**
-   * Whenever `user` changes:
-   * - If user is set → show dashboard (login/register success)
-   * - If user is null → show landing (logout or initial load)
-   */
   useEffect(() => {
+    if (isLoading) return; // wait for /me check before deciding view
     if (user) {
       setView("dashboard");
-    } else {
+    } else if (view === "dashboard") {
+      // user was logged out
       setView("landing");
     }
-  }, [user]);
+  }, [user, isLoading]);
 
-  /* ── Dashboard ─────────────────────────────────────────────────────── */
-  if (view === "dashboard") {
-    return <DashboardView />;
+  /* ── Loading gate: prevents flash of landing for authenticated users ─ */
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--color-bg)" }}>
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: "var(--color-accent) transparent var(--color-accent) var(--color-accent)" }} />
+          <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>Restoring session…</p>
+        </div>
+      </div>
+    );
   }
 
-  /* ── Auth Forms (Register / Login) ─────────────────────────────────── */
+  /* ── Dashboard — route by user role ─────────────────────────────────── */
+  if (view === "dashboard") {
+    return user?.systemUser ? <AdminDashboard /> : <DashboardView />;
+  }
+
+  /* ── Auth Forms ────────────────────────────────────────────────────── */
   if (view === "register" || view === "login") {
     return (
       <AuthForms
@@ -62,14 +65,7 @@ export default function HomePage() {
         onLogin={() => setView("login")}
       />
       <FeaturesSection />
-
-      {/* Footer */}
-      <footer className="border-t border-border px-6 py-10 text-center">
-        <p className="text-sm text-text-dim">
-          © {new Date().getFullYear()} KTG-LEDGER. Built with double-entry
-          bookkeeping principles.
-        </p>
-      </footer>
+      <Footer />
     </main>
   );
 }

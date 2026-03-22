@@ -83,7 +83,7 @@ export default function TransferForm({ accounts, onSuccess }: TransferFormProps)
             value={from}
             onChange={(e) => setFrom(e.target.value)}
             required
-            className="w-full appearance-none rounded-xl bg-surface-alt border border-border px-4 py-3.5 text-text outline-none transition-all duration-300 focus:border-primary focus:shadow-[0_0_0_3px_var(--color-primary-soft)]"
+            className="w-full appearance-none rounded-xl bg-surface-alt border border-border px-4 py-3.5 text-(--color-text) outline-none transition-all duration-300 focus:border-accent focus:shadow-[0_0_0_3px_rgba(212,168,83,0.15)] hover:border-border-hover"
           >
             <option value="">Select source account</option>
             {accounts
@@ -107,7 +107,7 @@ export default function TransferForm({ accounts, onSuccess }: TransferFormProps)
             onChange={(e) => setTo(e.target.value)}
             placeholder="Paste destination account ID"
             required
-            className="w-full rounded-xl bg-surface-alt border border-border px-4 py-3.5 text-text placeholder:text-text-dim outline-none transition-all duration-300 focus:border-primary focus:shadow-[0_0_0_3px_var(--color-primary-soft)]"
+            className="w-full rounded-xl bg-surface-alt border border-border px-4 py-3.5 text-(--color-text) placeholder:text-text-dim outline-none transition-all duration-300 focus:border-accent focus:shadow-[0_0_0_3px_rgba(212,168,83,0.15)] hover:border-border-hover"
           />
           <label className="absolute -top-2.5 left-3 bg-surface-alt px-1 text-xs text-text-muted">
             To Account ID
@@ -126,7 +126,7 @@ export default function TransferForm({ accounts, onSuccess }: TransferFormProps)
             min="1"
             step="0.01"
             required
-            className="w-full rounded-xl bg-surface-alt border border-border px-4 py-3.5 text-text placeholder:text-text-dim outline-none transition-all duration-300 focus:border-primary focus:shadow-[0_0_0_3px_var(--color-primary-soft)]"
+            className="w-full rounded-xl bg-surface-alt border border-border px-4 py-3.5 text-(--color-text) placeholder:text-text-dim outline-none transition-all duration-300 focus:border-accent focus:shadow-[0_0_0_3px_rgba(212,168,83,0.15)] hover:border-border-hover"
           />
           <label className="absolute -top-2.5 left-3 bg-surface-alt px-1 text-xs text-text-muted">
             Amount (₹)

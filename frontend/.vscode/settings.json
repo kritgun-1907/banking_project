@@ -1,0 +1,6 @@
+{
+  // Tell the VS Code CSS language server about Tailwind v4's custom at-rules.
+  // Without this, @theme, @utility, @variant etc. show "Unknown at rule" warnings.
+  "css.customData": [],
+  "css.lint.unknownAtRules": "ignore"
+}

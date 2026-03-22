@@ -10,6 +10,7 @@ const cors = require('cors');
 const authRouter = require('./routes/auth.routes');
 const accountRouter = require('./routes/account.routes');
 const transactionRouter = require('./routes/transaction.routes');
+const adminRouter = require('./routes/admin.routes');
 
 const app = express();
 
@@ -31,8 +32,6 @@ app.use(cookieParser());      // Parse cookies into req.cookies
 app.use("/api/auth", authRouter);
 app.use("/api/account", accountRouter);
 app.use("/api/transactions", transactionRouter);
-
-
-
+app.use("/api/admin", adminRouter);
 
 module.exports = app;

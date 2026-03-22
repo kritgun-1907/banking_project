@@ -1,20 +1,19 @@
 /**
  * @file HeroSection.tsx
- * @description Full-viewport parallax hero with animated gradient overlay,
- *              headline, subtitle, and CTA button. Uses Intersection Observer
- *              for scroll-driven parallax effect on the background layer.
+ * @description Full-viewport hero section with Apple-inspired cream UI.
+ *              Features a banking overlay image, bold display heading
+ *              ("Expert Banking" style), parallax scroll, CTA buttons,
+ *              and scroll indicator.
  */
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Clipboard, LogIn } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import Button from "@/components/ui/Button";
 
 interface HeroProps {
-  /** Navigate to register form */
   onGetStarted: () => void;
-  /** Navigate to login form */
   onLogin: () => void;
 }
 
@@ -26,61 +25,77 @@ export default function HeroSection({ onGetStarted, onLogin }: HeroProps) {
     function handleScroll() {
       if (!bgRef.current) return;
       const y = window.scrollY;
-      bgRef.current.style.transform = `translateY(${y * 0.35}px) scale(1.1)`;
+      bgRef.current.style.transform = `translateY(${y * 0.25}px)`;
     }
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <div className="relative min-h-screen overflow-hidden flex flex-col">
-      {/* ── Parallax Background ──────────────────────────────────────────── */}
+    <div className="relative min-h-screen overflow-hidden flex flex-col bg-bg">
+      {/* ── Parallax Background — banking overlay image ──────────────── */}
       <div
         ref={bgRef}
-        className="absolute inset-0 -z-20 scale-110"
+        className="absolute inset-0 -z-20"
         style={{
-          background:
-            "radial-gradient(ellipse at 30% 20%, rgba(124,106,255,0.15) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(167,139,250,0.1) 0%, transparent 50%)",
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1920&q=80')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: 0.08,
         }}
       />
-      {/* Dark overlay */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-bg/60 to-bg" />
+      {/* Warm gradient overlay */}
+      <div className="absolute inset-0 -z-10 bg-linear-to-b from-bg via-bg/90 to-bg" />
 
-      {/* ── Navigation Bar ───────────────────────────────────────────────── */}
+      {/* ── Navigation Bar ───────────────────────────────────────────── */}
       <nav className="flex items-center justify-between px-6 py-5 md:px-12 animate-fade-in">
         <Logo />
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" sm onClick={onLogin}>
-            Login
-          </Button>
-          <Button sm onClick={onGetStarted}>
-            Get Started
-          </Button>
+        <div className="hidden md:flex items-center gap-8">
+          <a href="#features" className="text-sm text-text-muted hover:text-(--color-text) transition-colors">Home</a>
+          <a href="#showcase" className="text-sm text-text-muted hover:text-(--color-text) transition-colors">About Us</a>
+          <a href="#footer" className="text-sm text-text-muted hover:text-(--color-text) transition-colors">Contact</a>
         </div>
+        <Button sm onClick={onLogin}>
+          <LogIn size={14} /> Sign In
+        </Button>
       </nav>
 
-      {/* ── Hero Content ─────────────────────────────────────────────────── */}
+      {/* ── Hero Content — "Expert Hair Dresser" inspired layout ──── */}
       <div className="flex flex-1 flex-col items-center justify-center px-6 text-center animate-fade-in-up">
-        <h1 className="font-[family-name:var(--font-display)] text-5xl md:text-7xl lg:text-8xl font-bold leading-[1.05] tracking-tight mb-6">
-          Banking.
-          <br />
-          <span className="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)] bg-clip-text text-transparent">
-            Reimagined.
-          </span>
+        {/* Badge */}
+        <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-white/60 backdrop-blur-sm px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.2em] text-text-muted">
+          <span className="text-accent">✦</span>
+          Premium Digital Banking
+        </div>
+
+        {/* Main Heading — bold, black, massive */}
+        <h1 className="font-display text-6xl md:text-8xl lg:text-9xl font-bold leading-[0.95] tracking-tight mb-2">
+          Expert
         </h1>
-        <p className="max-w-xl text-lg text-text-muted mb-10 leading-relaxed">
-          Secure ledger-based transactions, real-time balances, and
-          enterprise-grade security — all in a minimalist experience.
+        <h1 className="font-display text-6xl md:text-8xl lg:text-9xl font-bold leading-[0.95] tracking-tight mb-4">
+          Banking
+        </h1>
+        {/* Gold underline accent */}
+        <div className="w-48 md:w-64 h-1 bg-accent rounded-full mb-8" />
+
+        <p className="max-w-lg text-base md:text-lg text-text-muted mb-10 leading-relaxed">
+          Book transactions, process payments, and track your ledger&apos;s
+          performance — all in one place.
         </p>
-        <Button
-          className="px-10 py-4 text-base"
-          onClick={onGetStarted}
-        >
-          Open Your Account
-        </Button>
+
+        {/* CTA Buttons */}
+        <div className="flex items-center gap-4">
+          <Button className="px-8 py-4 text-sm" onClick={onGetStarted}>
+            <Clipboard size={16} /> Get Started
+          </Button>
+          <Button variant="ghost" className="px-8 py-4 text-sm" onClick={onLogin}>
+            <LogIn size={16} /> Sign In
+          </Button>
+        </div>
       </div>
 
-      {/* ── Scroll Indicator ─────────────────────────────────────────────── */}
+      {/* ── Scroll Indicator ─────────────────────────────────────────── */}
       <div className="flex flex-col items-center pb-10 animate-scroll-hint">
         <span className="text-xs text-text-dim mb-2 tracking-widest uppercase">
           Scroll to explore

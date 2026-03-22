@@ -1,16 +1,14 @@
 /**
  * @file Button.tsx
- * @description Reusable button component with multiple visual variants.
- *              Supports primary (gradient), ghost (outlined), and disabled states.
+ * @description Reusable button with Apple-inspired design.
+ *              Primary: dark pill with gold hover glow. Ghost: bordered.
+ *              Vibrant hover effects on all variants.
  */
 import React from "react";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  /** Visual variant */
   variant?: "primary" | "ghost";
-  /** Full width */
   full?: boolean;
-  /** Small size */
   sm?: boolean;
 }
 
@@ -23,15 +21,15 @@ export default function Button({
   ...rest
 }: ButtonProps) {
   const base =
-    "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-300 cursor-pointer select-none disabled:opacity-50 disabled:pointer-events-none";
+    "inline-flex items-center justify-center gap-2 rounded-full font-semibold cursor-pointer select-none disabled:opacity-50 disabled:pointer-events-none transition-all duration-300 ease-out";
 
-  const sizes = sm ? "px-4 py-1.5 text-xs" : "px-6 py-3 text-sm";
+  const sizes = sm ? "px-5 py-2 text-xs" : "px-7 py-3.5 text-sm";
 
   const variants = {
     primary:
-      "bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] text-white shadow-sm hover:-translate-y-0.5 hover:shadow-[0_0_30px_var(--color-primary-glow)]",
+      "bg-[var(--color-primary)] text-white shadow-sm hover:bg-[var(--color-accent)] hover:shadow-[0_8px_30px_rgba(212,168,83,0.35)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm",
     ghost:
-      "bg-transparent border border-[var(--color-border)] text-[var(--color-text)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]",
+      "bg-transparent border border-[var(--color-border)] text-[var(--color-text)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] hover:-translate-y-0.5 active:translate-y-0",
   };
 
   return (
